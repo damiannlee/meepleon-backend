@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: meepleday
+  profiles:
+    default: dev
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        order_by:
+          default_null_ordering: last
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    # H2 in PostgreSQL-compatibility mode so migrations stay portable to prod Postgres.
+    url: jdbc:h2:mem:meepleday;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
