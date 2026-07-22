@@ -1,5 +1,6 @@
 package com.meepleday.event
 
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -40,8 +41,10 @@ class EventController(
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun submit(@Valid @RequestBody request: EventSubmissionRequest): EventResponse =
-        eventService.submit(request)
+    fun submit(
+        @Valid @RequestBody request: EventSubmissionRequest,
+        servletRequest: HttpServletRequest,
+    ): EventResponse = eventService.submit(request, servletRequest.remoteAddr)
 
     companion object {
         // Nulls-last handled globally via hibernate.order_by.default_null_ordering

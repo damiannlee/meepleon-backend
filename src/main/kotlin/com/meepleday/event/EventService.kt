@@ -21,6 +21,7 @@ data class EventFeedQuery(
 @Service
 class EventService(
     private val eventRepository: EventRepository,
+    private val rateLimiter: SubmissionRateLimiter,
     private val clock: Clock,
 ) {
 
@@ -41,10 +42,15 @@ class EventService(
         return EventResponse.of(event, now)
     }
 
+    /** Bot traffic (honeypot trip or rate-limit exceeded) gets a convincing response but is never persisted (ADR-0006). */
     @Transactional
-    fun submit(request: EventSubmissionRequest): EventResponse {
+    fun submit(request: EventSubmissionRequest, clientIp: String): EventResponse {
+        val now = clock.instant()
+        if (request.isHoneypotTripped() || !rateLimiter.tryConsume(clientIp)) {
+            return request.toFakeResponse(now)
+        }
         val saved = eventRepository.save(request.toEntity())
-        return EventResponse.of(saved, clock.instant())
+        return EventResponse.of(saved, now)
     }
 
     @Transactional(readOnly = true)
