@@ -78,7 +78,33 @@ data class EventSubmissionRequest(
 
     @field:Size(max = 255) val submitterName: String? = null,
     @field:Email @field:Size(max = 255) val submitterEmail: String? = null,
+
+    /** Honeypot decoy (ADR-0006): hidden from real users, so any value here marks the request as a bot. */
+    @field:Size(max = 255) val website: String? = null,
 ) {
+    fun isHoneypotTripped(): Boolean = !website.isNullOrBlank()
+
+    /** Convincing but non-persisted response for bot traffic (honeypot or rate-limit trip) — see ADR-0006. */
+    fun toFakeResponse(now: Instant): EventResponse = EventResponse(
+        id = FAKE_SUBMISSION_ID,
+        title = title,
+        eventType = eventType,
+        region = region,
+        platform = platform,
+        originalUrl = originalUrl,
+        description = description,
+        coverImageUrl = coverImageUrl,
+        publisher = publisher,
+        startAt = startAt,
+        endAt = endAt,
+        goalAmount = goalAmount,
+        currentAmount = currentAmount,
+        currency = currency,
+        fundingProgressPercent = computeFundingProgressPercent(goalAmount, currentAmount),
+        status = EventStatus.of(startAt, endAt, now),
+        moderationStatus = ModerationStatus.PENDING,
+    )
+
     fun toEntity(): Event = Event(
         title = title,
         eventType = eventType,
@@ -98,6 +124,8 @@ data class EventSubmissionRequest(
         submitterEmail = submitterEmail,
     )
 }
+
+private const val FAKE_SUBMISSION_ID = 0L
 
 enum class ModerationAction { PUBLISH, REJECT }
 

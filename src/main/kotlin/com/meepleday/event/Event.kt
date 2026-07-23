@@ -11,7 +11,16 @@ import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Instant
+
+/** Funding progress as a percentage (0-based, may exceed 100), or null when either amount is missing. */
+fun computeFundingProgressPercent(goalAmount: BigDecimal?, currentAmount: BigDecimal?): Int? {
+    val goal = goalAmount ?: return null
+    val current = currentAmount ?: return null
+    if (goal.signum() <= 0) return null
+    return current.multiply(BigDecimal(100)).divide(goal, 0, RoundingMode.DOWN).toInt()
+}
 
 @Entity
 @Table(
@@ -92,13 +101,7 @@ class Event(
 
     fun statusAt(now: Instant): EventStatus = EventStatus.of(startAt, endAt, now)
 
-    /** Funding progress as a percentage (0-based, may exceed 100), or null when not a funding event. */
-    fun fundingProgressPercent(): Int? {
-        val goal = goalAmount ?: return null
-        val current = currentAmount ?: return null
-        if (goal.signum() <= 0) return null
-        return current.multiply(BigDecimal(100)).divide(goal, 0, java.math.RoundingMode.DOWN).toInt()
-    }
+    fun fundingProgressPercent(): Int? = computeFundingProgressPercent(goalAmount, currentAmount)
 
     fun publish() {
         moderationStatus = ModerationStatus.PUBLISHED
