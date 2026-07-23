@@ -105,7 +105,7 @@ data class EventSubmissionRequest(
         moderationStatus = ModerationStatus.PENDING,
     )
 
-    fun toEntity(): Event = Event(
+    fun toEntity(submittedByUserId: Long? = null): Event = Event(
         title = title,
         eventType = eventType,
         region = region,
@@ -122,6 +122,7 @@ data class EventSubmissionRequest(
         moderationStatus = ModerationStatus.PENDING,
         submitterName = submitterName,
         submitterEmail = submitterEmail,
+        submittedByUserId = submittedByUserId,
     )
 }
 

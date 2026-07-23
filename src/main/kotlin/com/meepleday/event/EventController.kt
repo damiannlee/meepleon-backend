@@ -1,5 +1,6 @@
 package com.meepleday.event
 
+import com.meepleday.user.CurrentUserProvider
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/events")
 class EventController(
     private val eventService: EventService,
+    private val currentUserProvider: CurrentUserProvider,
 ) {
 
     /** Feed sorted by soonest deadline first (마감임박순), nulls last. */
@@ -44,7 +46,7 @@ class EventController(
     fun submit(
         @Valid @RequestBody request: EventSubmissionRequest,
         servletRequest: HttpServletRequest,
-    ): EventResponse = eventService.submit(request, servletRequest.remoteAddr)
+    ): EventResponse = eventService.submit(request, servletRequest.remoteAddr, currentUserProvider.currentUserId())
 
     companion object {
         // Nulls-last handled globally via hibernate.order_by.default_null_ordering

@@ -11,3 +11,15 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          # Dummy values so ClientRegistrationRepository wires up without real IdP credentials;
+          # tests never actually complete an OAuth handshake.
+          kakao:
+            client-id: test-kakao-client-id
+            client-secret: test-kakao-client-secret
+          google:
+            client-id: test-google-client-id
+            client-secret: test-google-client-secret

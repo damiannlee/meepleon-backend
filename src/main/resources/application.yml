@@ -16,6 +16,39 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+  security:
+    oauth2:
+      client:
+        registration:
+          # client-id/secret fall back to "unset" until real Kakao/Google apps are registered.
+          # Spring Boot's OAuth2ClientProperties rejects a truly empty client-id at startup, so a
+          # non-empty placeholder is required — the app still boots either way; login just fails
+          # with an IdP-side error until real values are set via env vars.
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID:unset}
+            client-secret: ${KAKAO_CLIENT_SECRET:unset}
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-authentication-method: client_secret_post
+            scope: profile_nickname
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:unset}
+            client-secret: ${GOOGLE_CLIENT_SECRET:unset}
+            # No "openid" scope on purpose: keeps this a plain OAuth2 login (DefaultOAuth2UserService)
+            # instead of OIDC, so both providers share the same CustomOAuth2UserService code path.
+            scope: email,profile
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+meepleday:
+  # ADMIN self-registration is disallowed by design. Bootstrap the first admin by logging in once
+  # (creates a USER row), reading its provider_id (H2 console in dev, or the DB directly in prod),
+  # then adding "PROVIDER:providerId" here — e.g. "KAKAO:1234567890".
+  admin-provider-ids: []
 
 ---
 spring:

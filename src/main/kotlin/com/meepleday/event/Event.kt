@@ -92,6 +92,10 @@ class Event(
     @Column(name = "submitter_email")
     var submitterEmail: String? = null,
 
+    /** Set when the submitter was logged in at submission time; anonymous submissions leave this null. */
+    @Column(name = "submitted_by_user_id")
+    var submittedByUserId: Long? = null,
+
 ) : BaseTimeEntity() {
 
     @Id

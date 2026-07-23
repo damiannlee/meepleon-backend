@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -40,6 +41,7 @@ class SubmissionAbusePreventionTest(
         mockMvc.perform(
             post("/api/events")
                 .with(fromIp("203.0.113.201"))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)),
         )
@@ -65,6 +67,7 @@ class SubmissionAbusePreventionTest(
             mockMvc.perform(
                 post("/api/events")
                     .with(fromIp(ip))
+                    .with(csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request)),
             ).andExpect(status().isCreated)
@@ -81,6 +84,7 @@ class SubmissionAbusePreventionTest(
         mockMvc.perform(
             post("/api/events")
                 .with(fromIp(ip))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(oneTooMany)),
         )

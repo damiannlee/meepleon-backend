@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -36,6 +38,7 @@ class EventApiIntegrationTest(
         // Submit -> lands as PENDING (201)
         val submitResult = mockMvc.perform(
             post("/api/events")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)),
         )
@@ -56,6 +59,8 @@ class EventApiIntegrationTest(
         // Operator publishes
         mockMvc.perform(
             patch("/api/admin/events/$id/moderation")
+                .with(csrf())
+                .with(user("admin").roles("ADMIN"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(EventModerationRequest(ModerationAction.PUBLISH))),
         )
@@ -83,6 +88,8 @@ class EventApiIntegrationTest(
 
         mockMvc.perform(
             patch("/api/admin/events/${event.id}/moderation")
+                .with(csrf())
+                .with(user("admin").roles("ADMIN"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(EventModerationRequest(ModerationAction.REJECT))),
         )
@@ -101,6 +108,7 @@ class EventApiIntegrationTest(
 
         mockMvc.perform(
             post("/api/events")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalid)),
         )

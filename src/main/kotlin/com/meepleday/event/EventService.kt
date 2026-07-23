@@ -42,14 +42,18 @@ class EventService(
         return EventResponse.of(event, now)
     }
 
-    /** Bot traffic (honeypot trip or rate-limit exceeded) gets a convincing response but is never persisted (ADR-0006). */
+    /**
+     * Bot traffic (honeypot trip or rate-limit exceeded) gets a convincing response but is never persisted (ADR-0006).
+     * Submission stays anonymous-friendly by design (Phase 2 auth doesn't gate it) — `submittedByUserId` is only
+     * attribution for logged-in submitters, not a requirement.
+     */
     @Transactional
-    fun submit(request: EventSubmissionRequest, clientIp: String): EventResponse {
+    fun submit(request: EventSubmissionRequest, clientIp: String, submittedByUserId: Long?): EventResponse {
         val now = clock.instant()
         if (request.isHoneypotTripped() || !rateLimiter.tryConsume(clientIp)) {
             return request.toFakeResponse(now)
         }
-        val saved = eventRepository.save(request.toEntity())
+        val saved = eventRepository.save(request.toEntity(submittedByUserId))
         return EventResponse.of(saved, now)
     }
 
