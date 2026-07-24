@@ -11,12 +11,6 @@ build/
 # OS
 .DS_Store
 
-# Node / frontend
-node_modules/
-frontend/dist/
-frontend/.vite/
-*.tsbuildinfo
-
 # Env
 .env
 .env.local
