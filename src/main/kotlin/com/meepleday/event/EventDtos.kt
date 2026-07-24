@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 import java.math.BigDecimal
 import java.time.Instant
 
-/** Public/detail view of an event, with lifecycle status and funding progress computed at read time. */
+/** Public/detail view of an event, with lifecycle status computed at read time. */
 data class EventResponse(
     val id: Long,
     val title: String,
@@ -20,10 +20,12 @@ data class EventResponse(
     val publisher: String?,
     val startAt: Instant?,
     val endAt: Instant?,
-    val goalAmount: BigDecimal?,
-    val currentAmount: BigDecimal?,
-    val currency: String?,
-    val fundingProgressPercent: Int?,
+    val scheduleNote: String?,
+    val gameId: Long?,
+    val location: String?,
+    val address: String?,
+    val admissionFee: BigDecimal?,
+    val reservationUrl: String?,
     val status: EventStatus,
     val moderationStatus: ModerationStatus,
 ) {
@@ -40,10 +42,12 @@ data class EventResponse(
             publisher = event.publisher,
             startAt = event.startAt,
             endAt = event.endAt,
-            goalAmount = event.goalAmount,
-            currentAmount = event.currentAmount,
-            currency = event.currency,
-            fundingProgressPercent = event.fundingProgressPercent(),
+            scheduleNote = event.scheduleNote,
+            gameId = event.gameId,
+            location = event.location,
+            address = event.address,
+            admissionFee = event.admissionFee,
+            reservationUrl = event.reservationUrl,
             status = event.statusAt(now),
             moderationStatus = event.moderationStatus,
         )
@@ -72,9 +76,14 @@ data class EventSubmissionRequest(
     @field:Size(max = 255) val publisher: String? = null,
     val startAt: Instant? = null,
     val endAt: Instant? = null,
-    val goalAmount: BigDecimal? = null,
-    val currentAmount: BigDecimal? = null,
-    @field:Size(max = 3) val currency: String? = null,
+    @field:Size(max = 255) val scheduleNote: String? = null,
+    val gameId: Long? = null,
+
+    /** OFFLINE_EVENT-only fields — ignored for other event types. */
+    @field:Size(max = 255) val location: String? = null,
+    @field:Size(max = 500) val address: String? = null,
+    val admissionFee: BigDecimal? = null,
+    @field:Size(max = 1000) val reservationUrl: String? = null,
 
     @field:Size(max = 255) val submitterName: String? = null,
     @field:Email @field:Size(max = 255) val submitterEmail: String? = null,
@@ -97,10 +106,12 @@ data class EventSubmissionRequest(
         publisher = publisher,
         startAt = startAt,
         endAt = endAt,
-        goalAmount = goalAmount,
-        currentAmount = currentAmount,
-        currency = currency,
-        fundingProgressPercent = computeFundingProgressPercent(goalAmount, currentAmount),
+        scheduleNote = scheduleNote,
+        gameId = gameId,
+        location = location,
+        address = address,
+        admissionFee = admissionFee,
+        reservationUrl = reservationUrl,
         status = EventStatus.of(startAt, endAt, now),
         moderationStatus = ModerationStatus.PENDING,
     )
@@ -116,9 +127,12 @@ data class EventSubmissionRequest(
         publisher = publisher,
         startAt = startAt,
         endAt = endAt,
-        goalAmount = goalAmount,
-        currentAmount = currentAmount,
-        currency = currency,
+        scheduleNote = scheduleNote,
+        gameId = gameId,
+        location = location,
+        address = address,
+        admissionFee = admissionFee,
+        reservationUrl = reservationUrl,
         moderationStatus = ModerationStatus.PENDING,
         submitterName = submitterName,
         submitterEmail = submitterEmail,
