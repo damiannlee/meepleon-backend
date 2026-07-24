@@ -11,16 +11,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Index
 import jakarta.persistence.Table
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.Instant
-
-/** Funding progress as a percentage (0-based, may exceed 100), or null when either amount is missing. */
-fun computeFundingProgressPercent(goalAmount: BigDecimal?, currentAmount: BigDecimal?): Int? {
-    val goal = goalAmount ?: return null
-    val current = currentAmount ?: return null
-    if (goal.signum() <= 0) return null
-    return current.multiply(BigDecimal(100)).divide(goal, 0, RoundingMode.DOWN).toInt()
-}
 
 @Entity
 @Table(
@@ -67,16 +58,26 @@ class Event(
     @Column(name = "end_at")
     var endAt: Instant? = null,
 
-    /** Funding goal — only meaningful for EventType.FUNDING. */
-    @Column(name = "goal_amount", precision = 15, scale = 2)
-    var goalAmount: BigDecimal? = null,
+    /** Free-text schedule hint for events without a fixed date yet (e.g. "2026년 4분기 예정"). */
+    @Column(name = "schedule_note", length = 255)
+    var scheduleNote: String? = null,
 
-    @Column(name = "current_amount", precision = 15, scale = 2)
-    var currentAmount: BigDecimal? = null,
+    /** Game this event belongs to; nullable since not every event maps to a single game (ADR-0007). */
+    @Column(name = "game_id")
+    var gameId: Long? = null,
 
-    /** ISO currency code (KRW, USD ...) so overseas amounts render correctly. */
-    @Column(length = 3)
-    var currency: String? = null,
+    /** OFFLINE_EVENT-only fields — venue name, e.g. "서울 코엑스". */
+    @Column(name = "location")
+    var location: String? = null,
+
+    @Column(name = "address")
+    var address: String? = null,
+
+    @Column(name = "admission_fee", precision = 15, scale = 2)
+    var admissionFee: BigDecimal? = null,
+
+    @Column(name = "reservation_url", length = 1000)
+    var reservationUrl: String? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "moderation_status", nullable = false, length = 20)
@@ -104,8 +105,6 @@ class Event(
         protected set
 
     fun statusAt(now: Instant): EventStatus = EventStatus.of(startAt, endAt, now)
-
-    fun fundingProgressPercent(): Int? = computeFundingProgressPercent(goalAmount, currentAmount)
 
     fun publish() {
         moderationStatus = ModerationStatus.PUBLISHED

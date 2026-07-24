@@ -36,9 +36,13 @@ object EventSpecifications {
             val endAt = root.get<Instant>(endAtField)
             val startAt = root.get<Instant>(startAtField)
             when (status) {
+                EventStatus.ANNOUNCED -> cb.and(cb.isNull(startAt), cb.isNull(endAt))
                 EventStatus.ENDED -> cb.and(cb.isNotNull(endAt), cb.lessThan(endAt, now))
                 EventStatus.UPCOMING -> cb.and(cb.isNotNull(startAt), cb.greaterThan(startAt, now))
-                EventStatus.ONGOING -> ongoingPredicate(cb, startAt, endAt, now)
+                EventStatus.ONGOING -> cb.and(
+                    ongoingPredicate(cb, startAt, endAt, now),
+                    cb.or(cb.isNotNull(startAt), cb.isNotNull(endAt)),
+                )
                 EventStatus.ENDING_SOON -> cb.and(
                     ongoingPredicate(cb, startAt, endAt, now),
                     cb.isNotNull(endAt),

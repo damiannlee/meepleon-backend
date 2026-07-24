@@ -50,8 +50,8 @@ class EventStatusTest {
     }
 
     @Test
-    fun `ongoing when both timestamps are absent`() {
+    fun `announced when both timestamps are absent`() {
         val status = EventStatus.of(startAt = null, endAt = null, now = now)
-        assertEquals(EventStatus.ONGOING, status)
+        assertEquals(EventStatus.ANNOUNCED, status)
     }
 }

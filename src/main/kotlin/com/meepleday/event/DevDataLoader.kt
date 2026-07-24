@@ -4,7 +4,6 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import java.math.BigDecimal
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
@@ -29,9 +28,6 @@ class DevDataLoader {
                     publisher = "코리아보드게임즈",
                     startAt = now.minus(5, ChronoUnit.DAYS),
                     endAt = now.plus(30, ChronoUnit.HOURS),
-                    goalAmount = BigDecimal("10000000"),
-                    currentAmount = BigDecimal("42500000"),
-                    currency = "KRW",
                 ).apply { publish() },
                 Event(
                     title = "Nemesis: Retaliation — Gamefound",
@@ -43,9 +39,6 @@ class DevDataLoader {
                     publisher = "Awaken Realms",
                     startAt = now.minus(2, ChronoUnit.DAYS),
                     endAt = now.plus(12, ChronoUnit.DAYS),
-                    goalAmount = BigDecimal("200000"),
-                    currentAmount = BigDecimal("1350000"),
-                    currency = "USD",
                 ).apply { publish() },
                 Event(
                     title = "아컴호러 카드게임 신규 확장 선주문",
@@ -55,7 +48,6 @@ class DevDataLoader {
                     originalUrl = "https://boardm.co.kr/example-arkham",
                     startAt = now.minus(1, ChronoUnit.DAYS),
                     endAt = now.plus(9, ChronoUnit.DAYS),
-                    currency = "KRW",
                 ).apply { publish() },
                 Event(
                     title = "윙스팬 아시아 한정 특가",
@@ -65,7 +57,28 @@ class DevDataLoader {
                     originalUrl = "https://divedice.com/example-wingspan",
                     startAt = now.minus(3, ChronoUnit.DAYS),
                     endAt = now.plus(3, ChronoUnit.DAYS),
-                    currency = "KRW",
+                ).apply { publish() },
+                Event(
+                    title = "2026 서울 보드게임 페스타",
+                    eventType = EventType.OFFLINE_EVENT,
+                    region = Region.DOMESTIC,
+                    platform = "보드게임 페스타",
+                    originalUrl = "https://example.com/bg-festa-2026",
+                    description = "국내 최대 규모 보드게임 오프라인 행사.",
+                    startAt = now.plus(20, ChronoUnit.DAYS),
+                    endAt = now.plus(22, ChronoUnit.DAYS),
+                    location = "서울 코엑스",
+                    address = "서울특별시 강남구 영동대로 513",
+                    reservationUrl = "https://example.com/bg-festa-2026/reserve",
+                ).apply { publish() },
+                Event(
+                    title = "Frosthaven 한글판",
+                    eventType = EventType.PREORDER,
+                    region = Region.DOMESTIC,
+                    platform = "코리아보드게임즈",
+                    originalUrl = "https://example.com/frosthaven-kr",
+                    description = "일정 미정, 정식 발표 대기 중.",
+                    scheduleNote = "2026년 4분기 예정",
                 ).apply { publish() },
                 // A pending submission so the admin queue isn't empty either.
                 Event(

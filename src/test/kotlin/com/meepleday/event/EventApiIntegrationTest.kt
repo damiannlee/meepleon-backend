@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -94,6 +95,30 @@ class EventApiIntegrationTest(
                 .content(objectMapper.writeValueAsString(EventModerationRequest(ModerationAction.REJECT))),
         )
             .andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @Transactional
+    fun `event with no dates is announced, not ongoing`() {
+        val announced = eventRepository.save(
+            EventSubmissionRequest(
+                title = "일정 미정 예고",
+                eventType = EventType.PREORDER,
+                region = Region.DOMESTIC,
+                platform = "보드엠",
+                originalUrl = "https://boardm.co.kr/announced",
+                scheduleNote = "2026년 4분기 예정",
+            ).toEntity().apply { publish() },
+        )
+        val id = announced.id ?: error("persisted event must have an id")
+
+        mockMvc.perform(get("/api/events").param("status", "ANNOUNCED"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content[?(@.id == $id)]").exists())
+
+        mockMvc.perform(get("/api/events").param("status", "ONGOING"))
+            .andExpect(status().isOk)
+            .andExpect(jsonPath("$.content[?(@.id == $id)]").doesNotExist())
     }
 
     @Test
