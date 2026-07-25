@@ -19,10 +19,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          gh pr view "$PR_NUMBER" --json files --jq '.files[].path' > all_files.txt
-          if grep -q '^docs/' all_files.txt; then
+          gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json files --jq '.files[].path' > all_files.txt
+          # docs is a git submodule, so a bump shows as a single gitlink entry
+          # literally named "docs" — not "docs/<file>" — never matched by '^docs/'.
+          if grep -qE '^docs(/|$)' all_files.txt; then
             echo "docs_changed=true" >> "$GITHUB_OUTPUT"
-            grep '^docs/' all_files.txt > changed_docs.txt
           else
             echo "docs_changed=false" >> "$GITHUB_OUTPUT"
           fi
@@ -35,8 +36,7 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_URL: ${{ github.event.pull_request.html_url }}
         run: |
-          FILES_LIST=$(sed 's/^/- /' changed_docs.txt)
-          BODY=$(printf '백엔드 PR이 머지되어 docs가 갱신됐습니다. 프론트에서 확인 후 반영하세요.\n\n- 백엔드 PR: %s\n\n**변경된 docs 파일**\n%s\n\n---\n프론트 세션에 이 이슈를 링크하며 "docs 참고해서 진행해"로 착수를 지시하세요.' "$PR_URL" "$FILES_LIST")
+          BODY=$(printf '백엔드 PR이 머지되어 docs 서브모듈 포인터가 갱신됐습니다. 프론트에서 확인 후 반영하세요.\n\n- 백엔드 PR: %s\n\n---\n프론트 세션에 이 이슈를 링크하며 "docs 참고해서 진행해"로 착수를 지시하세요.' "$PR_URL")
           gh issue create \
             --repo damiannlee/meepleday-frontend \
             --title "백엔드 PR #${PR_NUMBER} 반영: ${PR_TITLE}" \
