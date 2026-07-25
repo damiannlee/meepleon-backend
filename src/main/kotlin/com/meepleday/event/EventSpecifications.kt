@@ -1,5 +1,6 @@
 package com.meepleday.event
 
+import com.meepleday.common.toContainsLikePattern
 import jakarta.persistence.criteria.Predicate
 import org.springframework.data.jpa.domain.Specification
 import java.time.Instant
@@ -22,6 +23,25 @@ object EventSpecifications {
     fun platform(platform: String?): Specification<Event>? =
         platform?.takeIf { it.isNotBlank() }
             ?.let { Specification { root, _, cb -> cb.equal(root.get<String>("platform"), it) } }
+
+    /**
+     * Matches [Event.title]/[Event.publisher] directly, plus any event whose [Event.gameId] is in
+     * [matchedGameIds] (pre-resolved by a separate Game-title lookup — see spec/search.md's fixed 2-query rule,
+     * since `gameId` is a plain column rather than a JPA association we can join on here).
+     */
+    fun keyword(q: String?, matchedGameIds: List<Long>): Specification<Event>? {
+        val trimmed = q?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        val pattern = toContainsLikePattern(trimmed).lowercase()
+        return Specification { root, _, cb ->
+            val titleMatch = cb.like(cb.lower(root.get("title")), pattern, '\\')
+            val publisherMatch = cb.like(cb.lower(root.get<String>("publisher")), pattern, '\\')
+            if (matchedGameIds.isEmpty()) {
+                cb.or(titleMatch, publisherMatch)
+            } else {
+                cb.or(titleMatch, publisherMatch, root.get<Long>("gameId").`in`(matchedGameIds))
+            }
+        }
+    }
 
     /**
      * Derived lifecycle status expressed as time predicates against [now],

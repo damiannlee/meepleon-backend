@@ -30,10 +30,11 @@ class EventController(
         @RequestParam(required = false) eventType: EventType?,
         @RequestParam(required = false) platform: String?,
         @RequestParam(required = false) status: EventStatus?,
+        @RequestParam(required = false) q: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
     ): Page<EventResponse> {
-        val query = EventFeedQuery(region, eventType, platform, status)
+        val query = EventFeedQuery(region, eventType, platform, status, q)
         val pageable = PageRequest.of(page, size.coerceIn(1, 100), DEADLINE_SORT)
         return eventService.getFeed(query, pageable)
     }

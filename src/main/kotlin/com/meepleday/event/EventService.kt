@@ -2,6 +2,8 @@ package com.meepleday.event
 
 import com.meepleday.common.BadRequestException
 import com.meepleday.common.NotFoundException
+import com.meepleday.common.toContainsLikePattern
+import com.meepleday.game.GameRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -16,11 +18,13 @@ data class EventFeedQuery(
     val eventType: EventType? = null,
     val platform: String? = null,
     val status: EventStatus? = null,
+    val keyword: String? = null,
 )
 
 @Service
 class EventService(
     private val eventRepository: EventRepository,
+    private val gameRepository: GameRepository,
     private val rateLimiter: SubmissionRateLimiter,
     private val clock: Clock,
 ) {
@@ -80,12 +84,19 @@ class EventService(
     }
 
     private fun buildFeedSpecification(query: EventFeedQuery, now: Instant): Specification<Event> {
+        val trimmedKeyword = query.keyword?.trim()?.takeIf { it.isNotEmpty() }
+        // Fixed 2-query shape (never per-row): resolve matching Game ids once, then combine with the event spec
+        // below — Event.gameId is a plain column, not a JPA association, so this can't be a single join (spec/search.md).
+        val matchedGameIds = trimmedKeyword
+            ?.let { gameRepository.findIdsByTitleLike(toContainsLikePattern(it)) }
+            ?: emptyList()
         val specs = listOfNotNull(
             EventSpecifications.moderationStatus(ModerationStatus.PUBLISHED),
             EventSpecifications.region(query.region),
             EventSpecifications.eventType(query.eventType),
             EventSpecifications.platform(query.platform),
             EventSpecifications.status(query.status, now),
+            EventSpecifications.keyword(trimmedKeyword, matchedGameIds),
         )
         return specs.reduce { acc, spec -> acc.and(spec) }
     }
