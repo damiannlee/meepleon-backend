@@ -34,3 +34,4 @@ Kotlin/Spring Boot API 서버. 실행·테스트·API 요약은 [README](README.
 
 - 완료 주장 전 `./gradlew test` 전체 통과를 실제로 확인(증거 없이 "됐다" 금지).
 - 새 기능은 단위 + 통합 테스트 동반. 자체 리뷰: N+1·트랜잭션 경계·타 유저 자원 접근 차단.
+- **컨트롤러 시그니처(경로·파라미터·요청/응답 바디)를 바꿨다면** `./gradlew generateOpenApiDocs`로 `docs/openapi.yaml` 재생성 여부 확인(위 [API 문서](#api-문서-openapi) 절 참조) — 테스트 통과와 별개로 매번 체크.
