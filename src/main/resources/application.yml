@@ -50,6 +50,12 @@ meepleday:
   # then adding "PROVIDER:providerId" here — e.g. "KAKAO:1234567890".
   admin-provider-ids: []
 
+springdoc:
+  # Spring's Page/Pageable/Sort wrapper schemas are built via reflection, whose property order
+  # isn't guaranteed stable across JVMs — sort alphabetically so docs/openapi.yaml diffs cleanly
+  # (see check-openapi-drift.yml) instead of churning on unrelated key reordering.
+  writer-with-order-by-keys: true
+
 ---
 spring:
   config:
