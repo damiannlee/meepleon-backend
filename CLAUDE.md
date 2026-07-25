@@ -29,6 +29,7 @@ Kotlin/Spring Boot API 서버. 실행·테스트·API 요약은 [README](README.
 
 - `docs/openapi.yaml` = 요청/응답 스키마 단일 소스([크로스 레포 협업](docs/CLAUDE.md#크로스-레포-협업) 참조) — 컨트롤러 애노테이션에서 springdoc-openapi로 자동 생성, 수기 작성 금지.
 - 컨트롤러 시그니처(경로·파라미터·요청/응답 바디)를 바꾸면 `./gradlew generateOpenApiDocs`로 재생성 후 `docs` 서브모듈 커밋에 포함.
+- PR이 `docs/`를 건드린 채 `main`에 머지되면 [`notify-frontend.yml`](.github/workflows/notify-frontend.yml)이 frontend 레포에 반영 대기 이슈를 자동 생성(`FRONTEND_ISSUE_TOKEN` 시크릿 사용) — 별도 수동 안내 불필요.
 
 ## 검증
 
