@@ -1,0 +1,33 @@
+name: Check OpenAPI drift
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-openapi-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with docs submodule)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Regenerate docs/openapi.yaml from current controllers
+        run: ./gradlew generateOpenApiDocs --no-daemon
+
+      # docs/ is a submodule, so a plain `git diff` at the repo root can't see inside it —
+      # compare against the submodule's own committed state instead.
+      - name: Fail if committed docs/openapi.yaml is stale
+        run: |
+          if ! git -C docs diff --exit-code openapi.yaml; then
+            echo "::error::docs/openapi.yaml is out of date with the current controllers. Run './gradlew generateOpenApiDocs' locally, commit the result inside docs/, and bump the docs submodule pointer in this PR."
+            exit 1
+          fi
