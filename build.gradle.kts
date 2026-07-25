@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.jpa") version "1.9.25"
     id("org.springframework.boot") version "3.4.2"
     id("io.spring.dependency-management") version "1.1.7"
+    id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
 group = "com.meepleday"
@@ -29,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
     implementation("org.flywaydb:flyway-core")
 
@@ -59,4 +61,13 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+// Regenerates docs/openapi.yaml from the live controller annotations — the single source of
+// truth for request/response schemas that spec/*.md links to instead of hand-transcribing.
+openApi {
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
+    outputDir.set(file("$rootDir/docs"))
+    outputFileName.set("openapi.yaml")
+    waitTimeInSeconds.set(30)
 }

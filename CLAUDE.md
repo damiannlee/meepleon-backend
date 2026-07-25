@@ -25,6 +25,11 @@ Kotlin/Spring Boot API 서버. 실행·테스트·API 요약은 [README](README.
 - `/api/admin/**`는 이미 `hasRole("ADMIN")`으로 잠김 — [SecurityConfig](src/main/kotlin/com/meepleday/user/SecurityConfig.kt). ADMIN은 자가가입 불가(허용목록으로만 부여).
 - 인증은 세션 쿠키 + CSRF 쿠키. `/api/**` 인증 실패는 리다이렉트가 아니라 `401`.
 
+## API 문서 (OpenAPI)
+
+- `docs/openapi.yaml` = 요청/응답 스키마 단일 소스([크로스 레포 협업](docs/CLAUDE.md#크로스-레포-협업) 참조) — 컨트롤러 애노테이션에서 springdoc-openapi로 자동 생성, 수기 작성 금지.
+- 컨트롤러 시그니처(경로·파라미터·요청/응답 바디)를 바꾸면 `./gradlew generateOpenApiDocs`로 재생성 후 `docs` 서브모듈 커밋에 포함.
+
 ## 검증
 
 - 완료 주장 전 `./gradlew test` 전체 통과를 실제로 확인(증거 없이 "됐다" 금지).
