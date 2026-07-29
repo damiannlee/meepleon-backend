@@ -1,1 +1,1 @@
-rootProject.name = "meepleday"
+rootProject.name = "meepleon"

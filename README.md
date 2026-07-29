@@ -1,8 +1,8 @@
-# MeepleDay Backend
+# Meepleon Backend
 
-[MeepleDay](https://github.com/damiannlee/meepleday-docs) — 흩어져 있는 보드게임 이벤트 일정(펀딩·선주문·특가·오프라인 행사·예고)을 국내·해외 통합해 한 곳에서 보는 서비스의 백엔드.
+[Meepleon](https://github.com/damiannlee/meepleon-docs) — 흩어져 있는 보드게임 이벤트 일정(펀딩·선주문·특가·오프라인 행사·예고)을 국내·해외 통합해 한 곳에서 보는 서비스의 백엔드.
 
-제품 정의·로드맵·ADR은 [docs](docs)(submodule, [meepleday-docs](https://github.com/damiannlee/meepleday-docs)) 참조. 프론트엔드는 [meepleday-frontend](https://github.com/damiannlee/meepleday-frontend).
+제품 정의·로드맵·ADR은 [docs](docs)(submodule, [meepleon-docs](https://github.com/damiannlee/meepleon-docs)) 참조. 프론트엔드는 [meepleday-frontend](https://github.com/damiannlee/meepleday-frontend).
 
 ## 스택
 
@@ -17,7 +17,7 @@ DB: dev = H2(PostgreSQL 호환 모드), prod = PostgreSQL
 ./gradlew bootRun --args='--server.port=18080'
 ```
 
-dev 프로파일은 인메모리 H2 + 샘플 이벤트 시드([DevDataLoader](src/main/kotlin/com/meepleday/event/DevDataLoader.kt))로 뜬다.
+dev 프로파일은 인메모리 H2 + 샘플 이벤트 시드([DevDataLoader](src/main/kotlin/com/meepleon/event/DevDataLoader.kt))로 뜬다.
 
 소셜 로그인을 실제로 쓰려면 Kakao/Google OAuth2 클라이언트 자격증명 설정이 필요하다. 미설정이어도 공개 피드·제보는 동작한다.
 
@@ -40,7 +40,7 @@ dev 프로파일은 인메모리 H2 + 샘플 이벤트 시드([DevDataLoader](sr
 | GET | `/oauth2/authorization/{kakao\|google}` | — | 소셜 로그인 시작 |
 | POST | `/api/auth/logout` | 로그인 | 로그아웃 |
 
-- 인증은 **세션 쿠키 + CSRF 쿠키**([SecurityConfig](src/main/kotlin/com/meepleday/user/SecurityConfig.kt)). `/api/**` 인증 실패는 리다이렉트가 아니라 `401`.
+- 인증은 **세션 쿠키 + CSRF 쿠키**([SecurityConfig](src/main/kotlin/com/meepleon/user/SecurityConfig.kt)). `/api/**` 인증 실패는 리다이렉트가 아니라 `401`.
 - ADMIN은 자가가입 불가 — 허용목록(`AdminAllowlistProperties`)으로 부여.
 
 ## 문서

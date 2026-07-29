@@ -9,7 +9,7 @@ plugins {
     id("org.springdoc.openapi-gradle-plugin") version "1.9.0"
 }
 
-group = "com.meepleday"
+group = "com.meepleon"
 version = "0.0.1-SNAPSHOT"
 
 java {

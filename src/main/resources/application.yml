@@ -1,6 +1,6 @@
 spring:
   application:
-    name: meepleday
+    name: meepleon
   profiles:
     default: dev
   jpa:
@@ -44,7 +44,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-meepleday:
+meepleon:
   # ADMIN self-registration is disallowed by design. Bootstrap the first admin by logging in once
   # (creates a USER row), reading its provider_id (H2 console in dev, or the DB directly in prod),
   # then adding "PROVIDER:providerId" here — e.g. "KAKAO:1234567890".
@@ -63,7 +63,7 @@ spring:
       on-profile: dev
   datasource:
     # H2 in PostgreSQL-compatibility mode so migrations stay portable to prod Postgres.
-    url: jdbc:h2:mem:meepleday;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:meepleon;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
