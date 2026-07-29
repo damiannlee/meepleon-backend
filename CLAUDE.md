@@ -31,6 +31,7 @@ Kotlin/Spring Boot API 서버. 실행·테스트·API 요약은 [README](README.
 - 컨트롤러 시그니처(경로·파라미터·요청/응답 바디)를 바꾸면 `./gradlew generateOpenApiDocs`로 재생성 후 `docs` 서브모듈 커밋에 포함.
 - PR이 `docs/`를 건드린 채 `main`에 머지되면 [`notify-frontend.yml`](.github/workflows/notify-frontend.yml)이 frontend 레포에 반영 대기 이슈를 자동 생성(`FRONTEND_ISSUE_TOKEN` 시크릿 사용) — 별도 수동 안내 불필요.
 - **`docs` 서브모듈에 backend 세션이 직접 commit·push하는 건 위 openapi.yaml 재생성 반영이 유일한 경우.** PRD·ADR·README 등 문서 콘텐츠 편집은 docs repo 자체 워크플로우 소관 — backend 작업 중 임의로 고쳐 push하지 않는다. 서브모듈 포인터는 원격 docs `main`을 pull해 최신으로 맞추는 것으로 충분.
+- **서브모듈 포인터 갱신만 있는 단독 PR은 만들지 않는다** — 코드 변경 없는 1줄 diff라 PR 목록만 지저분해짐(PR #9 이후 결정). 진행 중인 기능 브랜치의 커밋 하나로 포함시켜 반영. 기능 브랜치 없이 최신 docs가 당장 필요할 때만 예외적으로 단독 chore PR.
 
 ## 검증
 
