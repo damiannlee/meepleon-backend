@@ -1,7 +1,7 @@
 spring:
   datasource:
     # Clean H2 (no dev seed data) in PostgreSQL-compatibility mode; per-test-class isolation via random db name.
-    url: jdbc:h2:mem:meepleday-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:meepleon-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
