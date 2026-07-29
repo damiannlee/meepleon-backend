@@ -9,6 +9,7 @@ enum class EventType {
     PREORDER,       // 선주문
     SALE,           // 특가/할인
     OFFLINE_EVENT,  // 오프라인 행사 (컨벤션, 게임 페스타 ...)
+    RETAIL,         // 일반 판매 — 할인·마감 없이 정가로 상시 판매 (예: 국내 정발)
 }
 
 /** Domestic (Korea) vs overseas source, so users can filter by relevance. */

@@ -54,4 +54,14 @@ class EventStatusTest {
         val status = EventStatus.of(startAt = null, endAt = null, now = now)
         assertEquals(EventStatus.ANNOUNCED, status)
     }
+
+    @Test
+    fun `ongoing indefinitely when endAt is absent, as with RETAIL events`() {
+        val status = EventStatus.of(
+            startAt = now.minus(30, ChronoUnit.DAYS),
+            endAt = null,
+            now = now,
+        )
+        assertEquals(EventStatus.ONGOING, status)
+    }
 }
