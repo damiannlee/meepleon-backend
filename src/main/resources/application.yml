@@ -49,6 +49,16 @@ meepleon:
   # (creates a USER row), reading its provider_id (H2 console in dev, or the DB directly in prod),
   # then adding "PROVIDER:providerId" here — e.g. "KAKAO:1234567890".
   admin-provider-ids: []
+  prefill:
+    # Not sourced from a spec doc — starting defaults for ADR-0009's URL prefill fetch, tune after real traffic.
+    connect-timeout-ms: 3000
+    read-timeout-ms: 5000
+    max-redirects: 3
+    max-response-bytes: 2000000
+    # Empty = unrestricted. Fill in (e.g. "tumblbug.com") to scope prefill to known platforms if abuse is observed.
+    allowed-hosts: []
+    rate-limit-max-requests-per-window: 20
+    rate-limit-window-hours: 1
 
 springdoc:
   # Spring's Page/Pageable/Sort wrapper schemas are built via reflection, whose property order
