@@ -61,6 +61,14 @@ class EventService(
         return EventResponse.of(saved, now)
     }
 
+    /** Own submissions regardless of moderation status — the submitter should see PENDING/REJECTED too. */
+    @Transactional(readOnly = true)
+    fun getMySubmissions(submittedByUserId: Long, pageable: Pageable): Page<EventResponse> {
+        val now = clock.instant()
+        return eventRepository.findBySubmittedByUserIdOrderByCreatedAtDesc(submittedByUserId, pageable)
+            .map { EventResponse.of(it, now) }
+    }
+
     @Transactional(readOnly = true)
     fun listByModerationStatus(status: ModerationStatus, pageable: Pageable): Page<EventResponse> {
         val now = clock.instant()
